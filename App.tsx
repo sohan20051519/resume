@@ -60,6 +60,7 @@ const App: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
         documentTitle: `${data.personal.name || 'Resume'}-resume`,
     });
 
@@ -148,8 +149,7 @@ const App: React.FC = () => {
                                 {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                             </select>
                         </div>
-                        {/* FIX: The `content` property was removed from `useReactToPrint` config to avoid a TS error. Instead, the content is now passed directly to the `handlePrint` function call. */}
-                        <button onClick={() => handlePrint(undefined, () => componentRef.current)} className="bg-primary text-onPrimary px-4 py-2 rounded-lg font-semibold shadow-1 hover:shadow-2 transition-shadow">Print / Save PDF</button>
+                        <button onClick={handlePrint} className="bg-primary text-onPrimary px-4 py-2 rounded-lg font-semibold shadow-1 hover:shadow-2 transition-shadow">Print / Save PDF</button>
                     </div>
                     {error && <div className="p-4 mb-4 text-sm text-onPrimary bg-error rounded-lg" role="alert">{error}</div>}
                     <div ref={componentRef} className="transform scale-[0.9] origin-top">
