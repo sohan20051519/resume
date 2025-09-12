@@ -1,7 +1,18 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { ResumeData } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+const getAI = () => {
+    if (!ai) {
+        const apiKey = process.env.API_KEY ?? process.env.GEMINI_API_KEY;
+        if (!apiKey || apiKey === "undefined") {
+            throw new Error("API key is not set. Please set the GEMINI_API_KEY environment variable.");
+        }
+        ai = new GoogleGenAI({ apiKey });
+    }
+    return ai;
+};
 
 export const generateSummary = async (tone: string, existingSummary: string, experience: string): Promise<string> => {
   try {
@@ -19,7 +30,7 @@ export const generateSummary = async (tone: string, existingSummary: string, exp
       Generate a new summary of about 3-4 sentences. Do not use markdown.
     `;
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
         model: 'gemini-2.5-flash',
         contents: prompt,
     });
@@ -46,7 +57,7 @@ export const generateBulletPoints = async (jobTitle: string, jobDescription: str
         - Mentored junior developers, fostering team growth and improving code quality.
         `;
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
         });
@@ -76,7 +87,7 @@ export const parseResume = async (file: { base64: string; mimeType: string }): P
             `,
         };
 
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
             model: 'gemini-2.5-flash',
             contents: { parts: [filePart, textPart] },
             config: {
@@ -131,7 +142,7 @@ export const parseResume = async (file: { base64: string; mimeType: string }): P
                                 }
                             }
                         },
-                        projects: {
+.                        projects: {
                             type: Type.ARRAY,
                             items: {
                                 type: Type.OBJECT,
