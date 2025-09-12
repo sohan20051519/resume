@@ -68,7 +68,7 @@ const ExecutiveTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm mt-1 text-gray-700">{proj.description}</p>
                         </div>
                     ))}
-                </section>
+                </Section>
                 
                 <Section title="Skills" show={skills.length > 0}>
                     <p className="text-sm text-gray-700">{skills.map(skill => skill.name).join(' | ')}</p>
