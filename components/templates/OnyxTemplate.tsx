@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const OnyxTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personal, summary, experience, education, skills, projects, certifications } = data;
@@ -35,10 +36,12 @@ const OnyxTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                 </header>
                 
                 <SidebarSection title="Contact">
-                    <p className="break-words">{personal.phone}</p>
-                    <p className="break-words">{personal.email}</p>
-                    <p className="break-words">{personal.linkedin}</p>
-                    <p className="break-words">{personal.portfolio}</p>
+                    <div className="space-y-2">
+                        {personal.phone && <p className="flex items-center gap-2"><PhoneIcon className="w-4 h-4 flex-shrink-0" /> <span className="break-all">{personal.phone}</span></p>}
+                        {personal.email && <p className="flex items-center gap-2"><EmailIcon className="w-4 h-4 flex-shrink-0" /> <span className="break-all">{personal.email}</span></p>}
+                        {personal.linkedin && <p className="flex items-center gap-2"><LinkedInIcon className="w-4 h-4 flex-shrink-0" /> <span className="break-all">{personal.linkedin}</span></p>}
+                        {personal.portfolio && <p className="flex items-center gap-2"><WebsiteIcon className="w-4 h-4 flex-shrink-0" /> <span className="break-all">{personal.portfolio}</span></p>}
+                    </div>
                 </SidebarSection>
                 
                 <SidebarSection title="Skills">

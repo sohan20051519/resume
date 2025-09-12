@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const Section: React.FC<{ title: string; children: React.ReactNode; show?: boolean }> = ({ title, children, show = true }) => {
     if (!show) return null;
@@ -18,12 +19,12 @@ const ExecutiveTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="bg-white text-gray-800 p-8 font-serif w-[210mm] h-[297mm] min-w-[210mm] min-h-[297mm] text-sm">
             <header className="text-center mb-8">
                 <h1 className="text-3xl font-bold tracking-wider">{personal.name}</h1>
-                <p className="text-xs mt-2 text-gray-600">
-                    {personal.phone && `${personal.phone} • `}
-                    {personal.email && `${personal.email}`}
-                    {personal.linkedin && ` • ${personal.linkedin}`}
-                    {personal.portfolio && ` • ${personal.portfolio}`}
-                </p>
+                <div className="flex justify-center items-center flex-wrap gap-x-4 gap-y-1 text-xs mt-2 text-gray-600">
+                    {personal.phone && <span className="flex items-center gap-1.5"><PhoneIcon className="w-3.5 h-3.5" />{personal.phone}</span>}
+                    {personal.email && <span className="flex items-center gap-1.5"><EmailIcon className="w-3.5 h-3.5" />{personal.email}</span>}
+                    {personal.linkedin && <span className="flex items-center gap-1.5"><LinkedInIcon className="w-3.5 h-3.5" />{personal.linkedin}</span>}
+                    {personal.portfolio && <span className="flex items-center gap-1.5"><WebsiteIcon className="w-3.5 h-3.5" />{personal.portfolio}</span>}
+                </div>
             </header>
             
             <main>
@@ -68,7 +69,7 @@ const ExecutiveTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm mt-1 text-gray-700">{proj.description}</p>
                         </div>
                     ))}
-                </Section>
+                </section>
                 
                 <Section title="Skills" show={skills.length > 0}>
                     <p className="text-sm text-gray-700">{skills.map(skill => skill.name).join(' | ')}</p>

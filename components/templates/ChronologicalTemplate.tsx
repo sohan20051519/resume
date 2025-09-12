@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const ChronologicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personal, summary, experience, education, skills, projects, certifications } = data;
@@ -38,9 +39,12 @@ const ChronologicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="bg-white text-gray-800 p-8 font-sans w-[210mm] h-[297mm] min-w-[210mm] min-h-[297mm] text-sm">
             <header className="text-left mb-6">
                 <h1 className="text-4xl font-bold tracking-tight">{personal.name}</h1>
-                <p className="text-xs mt-2 text-gray-600">
-                    {personal.phone} <span className="text-gray-300">|</span> {personal.email} <span className="text-gray-300">|</span> {personal.linkedin} {personal.portfolio && <><span className="text-gray-300">|</span> {personal.portfolio}</>}
-                </p>
+                <div className="flex justify-start items-center flex-wrap gap-x-3 gap-y-1 text-xs mt-2 text-gray-600">
+                    {personal.phone && <span className="flex items-center gap-1.5"><PhoneIcon className="w-4 h-4" />{personal.phone}</span>}
+                    {personal.email && <span className="flex items-center gap-1.5"><EmailIcon className="w-4 h-4" />{personal.email}</span>}
+                    {personal.linkedin && <span className="flex items-center gap-1.5"><LinkedInIcon className="w-4 h-4" />{personal.linkedin}</span>}
+                    {personal.portfolio && <span className="flex items-center gap-1.5"><WebsiteIcon className="w-4 h-4" />{personal.portfolio}</span>}
+                </div>
             </header>
             
             <main className="grid grid-cols-3 gap-x-8">

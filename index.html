@@ -1,12 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite + React + TS</title>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resume Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#6750A4',
+              onPrimary: '#FFFFFF',
+              primaryContainer: '#EADDFF',
+              onPrimaryContainer: '#21005D',
+              secondary: '#625B71',
+              onSecondary: '#FFFFFF',
+              surface: '#FEF7FF',
+              onSurface: '#1D1B20',
+              background: '#F0F2F5', // Softer off-white background
+              onBackground: '#1C1B1F',
+              outline: '#79747E',
+              surfaceVariant: '#E7E0EC',
+              onSurfaceVariant: '#49454F',
+              error: '#B3261E',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Georgia', 'serif'],
+            },
+            boxShadow: {
+              'neumorphic': '8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff',
+              'neumorphic-inset': 'inset 8px 8px 16px #d1d9e6, inset -8px -8px 16px #ffffff',
+              'neumorphic-hover': '4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff',
+              '1': '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30)',
+              '2': '0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30)',
+              '3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30)',
+            },
+            borderRadius: {
+              'xl': '1rem', // 16px
+              '2xl': '1.5rem', // 24px
+              'lg': '0.75rem', // 12px
+              'md': '0.5rem', // 8px
+            }
+          },
+        },
+      }
+    </script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG4dprLBGzRrrKflNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.19.0",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-to-print": "https://aistudiocdn.com/react-to-print@^3.1.1"
+  }
+}
+</script>
 </head>
-<body>
+  <body class="bg-background text-onBackground">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>

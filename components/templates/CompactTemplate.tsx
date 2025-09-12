@@ -1,6 +1,8 @@
 
+
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personal, summary, experience, education, skills, projects, certifications } = data;
@@ -9,9 +11,12 @@ const CompactTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="bg-white text-gray-900 p-6 font-sans w-[210mm] h-[297mm] min-w-[210mm] min-h-[297mm] text-xs">
             <header className="text-center mb-4">
                 <h1 className="text-2xl font-bold">{personal.name}</h1>
-                <p className="text-xs">
-                    {personal.phone && `${personal.phone} | `}{personal.email && `${personal.email}`}{personal.linkedin && ` | ${personal.linkedin}`}{personal.portfolio && ` | ${personal.portfolio}`}
-                </p>
+                <div className="flex justify-center items-center flex-wrap gap-x-3 gap-y-1 text-xs mt-1">
+                    {personal.phone && <span className="flex items-center gap-1"><PhoneIcon className="w-3 h-3" />{personal.phone}</span>}
+                    {personal.email && <span className="flex items-center gap-1"><EmailIcon className="w-3 h-3" />{personal.email}</span>}
+                    {personal.linkedin && <span className="flex items-center gap-1"><LinkedInIcon className="w-3 h-3" />{personal.linkedin}</span>}
+                    {personal.portfolio && <span className="flex items-center gap-1"><WebsiteIcon className="w-3 h-3" />{personal.portfolio}</span>}
+                </div>
             </header>
             
             <p className="text-center text-xs mb-4">{summary}</p>

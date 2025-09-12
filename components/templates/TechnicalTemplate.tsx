@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const Section: React.FC<{ title: string; children: React.ReactNode; show?: boolean }> = ({ title, children, show = true }) => {
     if (!show) return null;
@@ -21,15 +22,11 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="bg-white text-gray-800 p-8 font-sans w-[210mm] h-[297mm] min-w-[210mm] min-h-[297mm] text-sm">
             <header className="mb-6">
                 <h1 className="text-4xl font-extrabold tracking-tight">{personal.name}</h1>
-                <div className="flex justify-between items-center text-xs mt-2 text-gray-600">
-                     <p>
-                        {personal.phone && `${personal.phone} | `}
-                        {personal.email && `${personal.email}`}
-                    </p>
-                    <p>
-                        {personal.linkedin && `${personal.linkedin}`}
-                        {personal.portfolio && ` | ${personal.portfolio}`}
-                    </p>
+                <div className="flex justify-start items-center flex-wrap gap-x-4 gap-y-1 text-xs mt-2 text-gray-600">
+                    {personal.phone && <span className="flex items-center gap-1.5"><PhoneIcon className="w-4 h-4" />{personal.phone}</span>}
+                    {personal.email && <span className="flex items-center gap-1.5"><EmailIcon className="w-4 h-4" />{personal.email}</span>}
+                    {personal.linkedin && <span className="flex items-center gap-1.5"><LinkedInIcon className="w-4 h-4" />{personal.linkedin}</span>}
+                    {personal.portfolio && <span className="flex items-center gap-1.5"><WebsiteIcon className="w-4 h-4" />{personal.portfolio}</span>}
                 </div>
             </header>
             
@@ -55,7 +52,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             </ul>
                         </div>
                     ))}
-                </Section>
+                </section>
                 
                 <Section title="Projects" show={projects.length > 0}>
                     {projects.map(proj => (
@@ -67,7 +64,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm mt-1 text-gray-700">{proj.description}</p>
                         </div>
                     ))}
-                </Section>
+                </section>
                 
                 <Section title="Education" show={education.length > 0}>
                     {education.map(edu => (
@@ -79,7 +76,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm italic">{edu.institution}</p>
                         </div>
                     ))}
-                </Section>
+                </section>
                 
                  {certifications.length > 0 && (
                     <Section title="Certifications">
@@ -88,7 +85,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                                  <p className="text-sm"><span className="font-bold">{cert.name}</span>, {cert.issuer} ({cert.date})</p>
                             </div>
                         ))}
-                    </Section>
+                    </section>
                 )}
             </main>
         </div>

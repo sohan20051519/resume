@@ -1,6 +1,8 @@
 
+
 import React from 'react';
 import type { ResumeData } from '../../types';
+import { PhoneIcon, EmailIcon, LinkedInIcon, WebsiteIcon } from '../../constants';
 
 const ClassicTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     const { personal, summary, experience, education, skills, projects, certifications } = data;
@@ -9,9 +11,12 @@ const ClassicTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="bg-white text-gray-800 p-8 font-serif w-[210mm] h-[297mm] min-w-[210mm] min-h-[297mm]">
             <header className="text-center mb-8 border-b-2 border-gray-400 pb-4">
                 <h1 className="text-4xl font-bold tracking-wider">{personal.name}</h1>
-                <p className="text-sm mt-2">
-                    {personal.phone && `${personal.phone} | `}{personal.email && `${personal.email}`}{personal.linkedin && ` | ${personal.linkedin}`}{personal.portfolio && ` | ${personal.portfolio}`}
-                </p>
+                <div className="flex justify-center items-center flex-wrap gap-x-4 gap-y-1 text-sm mt-2">
+                    {personal.phone && <span className="flex items-center gap-1.5"><PhoneIcon className="w-4 h-4" />{personal.phone}</span>}
+                    {personal.email && <span className="flex items-center gap-1.5"><EmailIcon className="w-4 h-4" />{personal.email}</span>}
+                    {personal.linkedin && <span className="flex items-center gap-1.5"><LinkedInIcon className="w-4 h-4" />{personal.linkedin}</span>}
+                    {personal.portfolio && <span className="flex items-center gap-1.5"><WebsiteIcon className="w-4 h-4" />{personal.portfolio}</span>}
+                </div>
             </header>
             <main>
                 <section className="mb-6">
