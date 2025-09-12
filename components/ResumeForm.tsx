@@ -1,10 +1,22 @@
-
 import React, { useState, useCallback } from 'react';
-// FIX: Import AITone as a value, and other types as type-only.
 import { AITone } from '../types';
-import type { ResumeData, PersonalInfo, WorkExperience, Education, Project, Skill, Certification } from '../types';
-import { SparklesIcon, TrashIcon, PlusIcon, ChevronDownIcon } from '../constants';
+import type { ResumeData, WorkExperience } from '../types';
+import { SparklesIcon, TrashIcon, PlusIcon } from '../constants';
 import * as geminiService from '../services/geminiService';
+import {
+    TextField,
+    Button,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Typography,
+    Grid,
+    IconButton,
+    Box,
+    Chip,
+    CircularProgress,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 type OnDataChange = <T extends keyof ResumeData>(section: T, value: ResumeData[T]) => void;
 
@@ -27,9 +39,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, onDataChange }) => {
     const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         onDataChange('summary', e.target.value);
     };
-    
-    // FIX: Replaced generic handler with a more type-safe version to resolve multiple type errors.
-    // Generic handler for list items
+
     const handleListItemChange = <K extends 'experience' | 'education' | 'projects' | 'skills' | 'certifications'>(
         section: K,
         index: number,
@@ -47,149 +57,183 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ data, onDataChange }) => {
         const list = [...data[section], newItem];
         onDataChange(section, list as any);
     };
-    
+
     const removeListItem = (section: 'experience' | 'education' | 'projects' | 'skills' | 'certifications', index: number) => {
         const list = data[section].filter((_, i) => i !== index);
         onDataChange(section, list as any);
     };
 
     return (
-        <div className="space-y-4 p-4">
-            <FormSection title="Personal Info" id="personal" isOpen={openSection === 'personal'} onToggle={handleOpenSection}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Input label="Full Name" name="name" value={data.personal.name} onChange={handlePersonalChange} />
-                    <Input label="Email" name="email" value={data.personal.email} onChange={handlePersonalChange} type="email" />
-                    <Input label="Phone" name="phone" value={data.personal.phone} onChange={handlePersonalChange} />
-                    <Input label="LinkedIn" name="linkedin" value={data.personal.linkedin} onChange={handlePersonalChange} placeholder="linkedin.com/in/..." />
-                    <Input label="Portfolio/Website" name="portfolio" value={data.personal.portfolio} onChange={handlePersonalChange} placeholder="yourportfolio.com" />
-                </div>
-            </FormSection>
+        <Box sx={{ p: 2, '.MuiAccordion-root': { mb: 2 } }}>
+            <Accordion expanded={openSection === 'personal'} onChange={() => handleOpenSection('personal')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Personal Info</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="Full Name" name="name" value={data.personal.name} onChange={handlePersonalChange} fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="Email" name="email" value={data.personal.email} onChange={handlePersonalChange} type="email" fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="Phone" name="phone" value={data.personal.phone} onChange={handlePersonalChange} fullWidth />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField label="LinkedIn" name="linkedin" value={data.personal.linkedin} onChange={handlePersonalChange} placeholder="linkedin.com/in/..." fullWidth />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField label="Portfolio/Website" name="portfolio" value={data.personal.portfolio} onChange={handlePersonalChange} placeholder="yourportfolio.com" fullWidth />
+                        </Grid>
+                    </Grid>
+                </AccordionDetails>
+            </Accordion>
 
-            <FormSection title="Summary" id="summary" isOpen={openSection === 'summary'} onToggle={handleOpenSection}>
-                <Textarea label="Career Objective / Summary" value={data.summary} onChange={handleSummaryChange} rows={5} />
-                <AIGenerateSummary data={data} onDataChange={onDataChange} />
-            </FormSection>
+            <Accordion expanded={openSection === 'summary'} onChange={() => handleOpenSection('summary')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Summary</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <TextField label="Career Objective / Summary" value={data.summary} onChange={handleSummaryChange} multiline rows={5} fullWidth />
+                    <AIGenerateSummary data={data} onDataChange={onDataChange} />
+                </AccordionDetails>
+            </Accordion>
 
-            <FormSection title="Work Experience" id="experience" isOpen={openSection === 'experience'} onToggle={handleOpenSection}>
-                {data.experience.map((exp, index) => (
-                    <div key={exp.id} className="p-4 border border-gray-700 rounded-md mb-4 relative">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Input label="Role / Title" value={exp.role} onChange={e => handleListItemChange('experience', index, 'role', e.target.value)} />
-                            <Input label="Company" value={exp.company} onChange={e => handleListItemChange('experience', index, 'company', e.target.value)} />
-                            <Input label="Start Date" value={exp.startDate} onChange={e => handleListItemChange('experience', index, 'startDate', e.target.value)} />
-                            <Input label="End Date" value={exp.endDate} onChange={e => handleListItemChange('experience', index, 'endDate', e.target.value)} />
-                        </div>
-                        <Textarea label="Description / Achievements" value={exp.description} onChange={e => handleListItemChange('experience', index, 'description', e.target.value)} rows={6} className="mt-4" />
-                        <AIGenerateBulletPoints exp={exp} onDescriptionUpdate={(newDesc) => handleListItemChange('experience', index, 'description', newDesc)} />
-                        <button onClick={() => removeListItem('experience', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-400"><TrashIcon /></button>
-                    </div>
-                ))}
-                <AddItemButton onClick={() => addListItem('experience')} text="Add Experience" />
-            </FormSection>
-            
-            <FormSection title="Education" id="education" isOpen={openSection === 'education'} onToggle={handleOpenSection}>
-                {data.education.map((edu, index) => (
-                     <div key={edu.id} className="p-4 border border-gray-700 rounded-md mb-4 relative">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Input label="Institution" value={edu.institution} onChange={e => handleListItemChange('education', index, 'institution', e.target.value)} />
-                            <Input label="Degree / Major" value={edu.degree} onChange={e => handleListItemChange('education', index, 'degree', e.target.value)} />
-                            <Input label="Start Date" value={edu.startDate} onChange={e => handleListItemChange('education', index, 'startDate', e.target.value)} />
-                            <Input label="End Date" value={edu.endDate} onChange={e => handleListItemChange('education', index, 'endDate', e.target.value)} />
-                            <Input label="GPA" value={edu.gpa} onChange={e => handleListItemChange('education', index, 'gpa', e.target.value)} />
-                        </div>
-                        <button onClick={() => removeListItem('education', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-400"><TrashIcon /></button>
-                    </div>
-                ))}
-                <AddItemButton onClick={() => addListItem('education')} text="Add Education" />
-            </FormSection>
-
-            <FormSection title="Projects" id="projects" isOpen={openSection === 'projects'} onToggle={handleOpenSection}>
-                 {data.projects.map((proj, index) => (
-                     <div key={proj.id} className="p-4 border border-gray-700 rounded-md mb-4 relative">
-                        <div className="space-y-4">
-                            <Input label="Project Name" value={proj.name} onChange={e => handleListItemChange('projects', index, 'name', e.target.value)} />
-                            <Input label="Link" value={proj.link} onChange={e => handleListItemChange('projects', index, 'link', e.target.value)} />
-                            <Textarea label="Description" value={proj.description} onChange={e => handleListItemChange('projects', index, 'description', e.target.value)} rows={3} />
-                        </div>
-                        <button onClick={() => removeListItem('projects', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-400"><TrashIcon /></button>
-                    </div>
-                 ))}
-                 <AddItemButton onClick={() => addListItem('projects')} text="Add Project" />
-            </FormSection>
-
-            <FormSection title="Skills" id="skills" isOpen={openSection === 'skills'} onToggle={handleOpenSection}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {data.skills.map((skill, index) => (
-                        <div key={skill.id} className="flex items-center gap-2">
-                             <Input label="Skill" value={skill.name} onChange={e => handleListItemChange('skills', index, 'name', e.target.value)} className="flex-grow" />
-                            <button onClick={() => removeListItem('skills', index)} className="text-red-500 hover:text-red-400 mt-6"><TrashIcon /></button>
-                        </div>
+            <Accordion expanded={openSection === 'experience'} onChange={() => handleOpenSection('experience')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Work Experience</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {data.experience.map((exp, index) => (
+                        <Box key={exp.id} sx={{ p: 2, border: '1px solid grey', borderRadius: 1, mb: 2, position: 'relative' }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Role / Title" value={exp.role} onChange={e => handleListItemChange('experience', index, 'role', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Company" value={exp.company} onChange={e => handleListItemChange('experience', index, 'company', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Start Date" value={exp.startDate} onChange={e => handleListItemChange('experience', index, 'startDate', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="End Date" value={exp.endDate} onChange={e => handleListItemChange('experience', index, 'endDate', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="Description / Achievements" value={exp.description} onChange={e => handleListItemChange('experience', index, 'description', e.target.value)} multiline rows={6} fullWidth />
+                                </Grid>
+                            </Grid>
+                            <AIGenerateBulletPoints exp={exp} onDescriptionUpdate={(newDesc) => handleListItemChange('experience', index, 'description', newDesc)} />
+                            <IconButton onClick={() => removeListItem('experience', index)} sx={{ position: 'absolute', top: 8, right: 8 }}><TrashIcon /></IconButton>
+                        </Box>
                     ))}
-                </div>
-                <AddItemButton onClick={() => addListItem('skills')} text="Add Skill" />
-            </FormSection>
+                    <Button onClick={() => addListItem('experience')} startIcon={<PlusIcon />}>Add Experience</Button>
+                </AccordionDetails>
+            </Accordion>
             
-            <FormSection title="Certifications" id="certifications" isOpen={openSection === 'certifications'} onToggle={handleOpenSection}>
-                 {data.certifications.map((cert, index) => (
-                     <div key={cert.id} className="p-4 border border-gray-700 rounded-md mb-4 relative">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Input label="Certification Name" value={cert.name} onChange={e => handleListItemChange('certifications', index, 'name', e.target.value)} />
-                            <Input label="Issuer" value={cert.issuer} onChange={e => handleListItemChange('certifications', index, 'issuer', e.target.value)} />
-                            <Input label="Date" value={cert.date} onChange={e => handleListItemChange('certifications', index, 'date', e.target.value)} />
-                        </div>
-                        <button onClick={() => removeListItem('certifications', index)} className="absolute top-2 right-2 text-red-500 hover:text-red-400"><TrashIcon /></button>
-                    </div>
-                 ))}
-                 <AddItemButton onClick={() => addListItem('certifications')} text="Add Certification" />
-            </FormSection>
-        </div>
+            <Accordion expanded={openSection === 'education'} onChange={() => handleOpenSection('education')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Education</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {data.education.map((edu, index) => (
+                        <Box key={edu.id} sx={{ p: 2, border: '1px solid grey', borderRadius: 1, mb: 2, position: 'relative' }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Institution" value={edu.institution} onChange={e => handleListItemChange('education', index, 'institution', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Degree / Major" value={edu.degree} onChange={e => handleListItemChange('education', index, 'degree', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Start Date" value={edu.startDate} onChange={e => handleListItemChange('education', index, 'startDate', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="End Date" value={edu.endDate} onChange={e => handleListItemChange('education', index, 'endDate', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="GPA" value={edu.gpa} onChange={e => handleListItemChange('education', index, 'gpa', e.target.value)} fullWidth />
+                                </Grid>
+                            </Grid>
+                            <IconButton onClick={() => removeListItem('education', index)} sx={{ position: 'absolute', top: 8, right: 8 }}><TrashIcon /></IconButton>
+                        </Box>
+                    ))}
+                    <Button onClick={() => addListItem('education')} startIcon={<PlusIcon />}>Add Education</Button>
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={openSection === 'projects'} onChange={() => handleOpenSection('projects')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Projects</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {data.projects.map((proj, index) => (
+                        <Box key={proj.id} sx={{ p: 2, border: '1px solid grey', borderRadius: 1, mb: 2, position: 'relative' }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField label="Project Name" value={proj.name} onChange={e => handleListItemChange('projects', index, 'name', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="Link" value={proj.link} onChange={e => handleListItemChange('projects', index, 'link', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="Description" value={proj.description} onChange={e => handleListItemChange('projects', index, 'description', e.target.value)} multiline rows={3} fullWidth />
+                                </Grid>
+                            </Grid>
+                            <IconButton onClick={() => removeListItem('projects', index)} sx={{ position: 'absolute', top: 8, right: 8 }}><TrashIcon /></IconButton>
+                        </Box>
+                    ))}
+                    <Button onClick={() => addListItem('projects')} startIcon={<PlusIcon />}>Add Project</Button>
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={openSection === 'skills'} onChange={() => handleOpenSection('skills')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Skills</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Grid container spacing={2}>
+                        {data.skills.map((skill, index) => (
+                            <Grid item xs={12} sm={6} key={skill.id}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <TextField label="Skill" value={skill.name} onChange={e => handleListItemChange('skills', index, 'name', e.target.value)} fullWidth />
+                                    <IconButton onClick={() => removeListItem('skills', index)}><TrashIcon /></IconButton>
+                                </Box>
+                            </Grid>
+                        ))}
+                    </Grid>
+                    <Button onClick={() => addListItem('skills')} startIcon={<PlusIcon />} sx={{ mt: 2 }}>Add Skill</Button>
+                </AccordionDetails>
+            </Accordion>
+            
+            <Accordion expanded={openSection === 'certifications'} onChange={() => handleOpenSection('certifications')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Certifications</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {data.certifications.map((cert, index) => (
+                         <Box key={cert.id} sx={{ p: 2, border: '1px solid grey', borderRadius: 1, mb: 2, position: 'relative' }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Certification Name" value={cert.name} onChange={e => handleListItemChange('certifications', index, 'name', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField label="Issuer" value={cert.issuer} onChange={e => handleListItemChange('certifications', index, 'issuer', e.target.value)} fullWidth />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField label="Date" value={cert.date} onChange={e => handleListItemChange('certifications', index, 'date', e.target.value)} fullWidth />
+                                </Grid>
+                            </Grid>
+                            <IconButton onClick={() => removeListItem('certifications', index)} sx={{ position: 'absolute', top: 8, right: 8 }}><TrashIcon /></IconButton>
+                        </Box>
+                    ))}
+                    <Button onClick={() => addListItem('certifications')} startIcon={<PlusIcon />}>Add Certification</Button>
+                </AccordionDetails>
+            </Accordion>
+        </Box>
     );
 };
-
-
-// Helper components defined outside the main component to avoid re-creation on render
-interface FormSectionProps {
-    title: string;
-    id: string;
-    isOpen: boolean;
-    onToggle: (id: string) => void;
-    children: React.ReactNode;
-}
-const FormSection: React.FC<FormSectionProps> = ({ title, id, isOpen, onToggle, children }) => (
-    <div className="bg-gray-800 rounded-lg shadow-md">
-        <button onClick={() => onToggle(id)} className="w-full text-left p-4 flex justify-between items-center bg-gray-700/50 rounded-t-lg hover:bg-gray-700">
-            <h2 className="text-lg font-semibold text-teal-400">{title}</h2>
-            <ChevronDownIcon className={`${isOpen ? 'rotate-180' : ''}`} />
-        </button>
-        {isOpen && <div className="p-4">{children}</div>}
-    </div>
-);
-
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label: string;
-}
-const Input: React.FC<InputProps> = ({ label, className, ...props }) => (
-    <div className={`w-full ${className}`}>
-        <label className="block text-sm font-medium text-gray-400 mb-1">{label}</label>
-        <input {...props} className="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
-    </div>
-);
-
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-    label: string;
-}
-const Textarea: React.FC<TextareaProps> = ({ label, className, ...props }) => (
-    <div className={`w-full ${className}`}>
-        <label className="block text-sm font-medium text-gray-400 mb-1">{label}</label>
-        <textarea {...props} className="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-sm focus:ring-teal-500 focus:border-teal-500" />
-    </div>
-);
-
-const AddItemButton: React.FC<{ onClick: () => void; text: string }> = ({ onClick, text }) => (
-    <button onClick={onClick} className="mt-4 w-full bg-teal-800 hover:bg-teal-700 text-teal-200 font-bold py-2 px-4 rounded-md flex items-center justify-center gap-2 transition-colors">
-        <PlusIcon /> {text}
-    </button>
-);
 
 const AIGenerateSummary: React.FC<{ data: ResumeData; onDataChange: OnDataChange }> = ({ data, onDataChange }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -202,16 +246,18 @@ const AIGenerateSummary: React.FC<{ data: ResumeData; onDataChange: OnDataChange
     };
 
     return (
-        <div className="mt-4 p-3 bg-gray-900/50 rounded-md">
-            <p className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2"><SparklesIcon /> AI Summary Assistant</p>
-            {isLoading ? <p className="text-sm text-gray-400">Generating...</p> : (
-                <div className="flex flex-wrap gap-2">
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.light', borderRadius: 1 }}>
+            <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.contrastText' }}>
+                <SparklesIcon /> AI Summary Assistant
+            </Typography>
+            {isLoading ? <CircularProgress size={24} /> : (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                     {(Object.keys(AITone) as Array<keyof typeof AITone>).map(tone => (
-                        <button key={tone} onClick={() => generate(AITone[tone])} className="text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-1 px-3 rounded-full">{AITone[tone]}</button>
+                        <Chip key={tone} label={AITone[tone]} onClick={() => generate(AITone[tone])} />
                     ))}
-                </div>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 
@@ -234,21 +280,21 @@ const AIGenerateBulletPoints: React.FC<{ exp: WorkExperience; onDescriptionUpdat
     };
     
     return (
-        <div className="mt-4 p-3 bg-gray-900/50 rounded-md">
-            <button onClick={generate} disabled={isLoading} className="text-sm font-medium text-yellow-400 mb-2 flex items-center gap-2 hover:text-yellow-300 disabled:text-gray-500">
-                <SparklesIcon /> {isLoading ? 'Generating Achievements...' : 'AI Suggest Bullet Points'}
-            </button>
+        <Box sx={{ mt: 2, p: 2, bgcolor: 'primary.light', borderRadius: 1 }}>
+            <Button onClick={generate} disabled={isLoading} startIcon={<SparklesIcon />}>
+                {isLoading ? 'Generating...' : 'AI Suggest Bullet Points'}
+            </Button>
             {suggestions.length > 0 && (
-                <div className="space-y-2 mt-2">
-                    <p className="text-xs text-gray-400">Click to add a suggestion:</p>
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2">Click to add a suggestion:</Typography>
                     {suggestions.map((s, i) => (
-                        <button key={i} onClick={() => addSuggestion(s)} className="block w-full text-left text-sm p-2 bg-gray-700 hover:bg-gray-600 rounded-md">
+                        <Button key={i} onClick={() => addSuggestion(s)} fullWidth sx={{ mt: 1, justifyContent: 'flex-start', textTransform: 'none' }}>
                             {s}
-                        </button>
+                        </Button>
                     ))}
-                </div>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 
