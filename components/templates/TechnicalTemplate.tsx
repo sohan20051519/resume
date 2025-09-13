@@ -52,7 +52,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             </ul>
                         </div>
                     ))}
-                </section>
+                </Section>
                 
                 <Section title="Projects" show={projects.length > 0}>
                     {projects.map(proj => (
@@ -64,7 +64,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm mt-1 text-gray-700">{proj.description}</p>
                         </div>
                     ))}
-                </section>
+                </Section>
                 
                 <Section title="Education" show={education.length > 0}>
                     {education.map(edu => (
@@ -76,7 +76,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                             <p className="text-sm italic">{edu.institution}</p>
                         </div>
                     ))}
-                </section>
+                </Section>
                 
                  {certifications.length > 0 && (
                     <Section title="Certifications">
@@ -85,7 +85,7 @@ const TechnicalTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
                                  <p className="text-sm"><span className="font-bold">{cert.name}</span>, {cert.issuer} ({cert.date})</p>
                             </div>
                         ))}
-                    </section>
+                    </Section>
                 )}
             </main>
         </div>
